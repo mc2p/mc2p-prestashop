@@ -45,8 +45,8 @@ fieldset a:hover {
 </style>
 {/literal}
 
-<div><img src="{$sofort.dfl.image_path|escape:'htmlall':'UTF-8'}" alt="142x38.png" width="142" height="38" title="" /></div>
-<form method="post" action="{$sofort.dfl.action|escape:'htmlall':'UTF-8'}">
+<div><img src="{$mc2p.dfl.img_path|escape:'htmlall':'UTF-8'}" alt="142x38.png" width="142" height="38" title="" /></div>
+<form method="post" action="{$mc2p.dfl.action|escape:'htmlall':'UTF-8'}">
 <br />
 
 <fieldset class="level1">
@@ -70,13 +70,13 @@ fieldset a:hover {
         <b>{l s='Please leave your MyChoice2Pay keys in the fields below:' mod='mc2p'}</b><br /><br />
         <label>{l s='Key' mod='mc2p'}</label>
         <div class="margin-form">
-            <input type="text" name="MC2P_KEY" value="{$sofort.config.MC2P_KEY|escape:'htmlall':'UTF-8'}" />
+            <input type="text" name="MC2P_KEY" value="{$mc2p.config.MC2P_KEY|escape:'htmlall':'UTF-8'}" />
             <p>{l s='Leave it blank for disabling' mod='mc2p'}</p>
         </div>
         <div class="clear"></div>
         <label>{l s='Secret Key' mod='mc2p'}</label>
         <div class="margin-form">
-            <input type="text" name="MC2P_SECRET_KEY" value="{$sofort.config.MC2P_SECRET_KEY|escape:'htmlall':'UTF-8'}" />
+            <input type="text" name="MC2P_SECRET_KEY" value="{$mc2p.config.MC2P_SECRET_KEY|escape:'htmlall':'UTF-8'}" />
             <p>{l s='Leave it blank for disabling' mod='mc2p'}</p>
         </div>
         <div class="clear"></div>
