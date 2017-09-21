@@ -1,68 +1,76 @@
 <?php
-include(dirname(__FILE__).'/../../config/config.inc.php');
-include(dirname(__FILE__).'/../../header.php');
-include(dirname(__FILE__).'/mc2p.php');
+/**
+ * mc2p Module
+ *
+ * Copyright (c) 2017 MyChoice2Pay
+ *
+ * @category  Payment
+ * @author    MyChoice2Pay, <www.mychoice2pay.com>
+ * @copyright 2017, MyChoice2Pay
+ * @link      https://www.mychoice2pay.com/
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ *
+ * Description:
+ *
+ * Payment module mc2p
+ *
+ * --
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to hola@mychoice2pay.com so we can send you a copy immediately.
+ */
 
-$autoloader_param = __DIR__ . '/lib/MC2P/MC2PClient.php';
-// Load up the MC2P library
+require_once dirname(__FILE__) . '/../../config/config.inc.php';
+require_once dirname(__FILE__) . '/../../init.php';
+require_once dirname(__FILE__) . '/mc2p.php';
+require_once dirname(__FILE__) . '/lib/MC2P/MC2PClient.php';
+
+$key = Configuration::get('MC2P_KEY');
+$secretKey = Configuration::get('MC2P_SECRET_KEY');
+$mc2p = new MC2P\MC2PClient($key, $secretKey);
+
+$json = (array)json_decode(Tools::file_get_contents('php://input'));
+
+$notificationData = $mc2p->NotificationData($json, $mc2p);
+$mc2pTransaction = $notificationData->getTransaction();
+
+if (!$mc2pTransaction) {
+    throw new \Exception('Invalid notification, nothing todo.');
+}
+
+/* Join transaction datas */
+$transaction = array(
+    'id' => $notificationData->getId(),
+    'amount' => $mc2pTransaction->total_price,
+    'status' => $notificationData->getStatus(),
+    'cart_id' => $notificationData->getOrderId()
+);
+
+$customer = new Customer((int)$cart->id_customer);
+
 try {
-    require_once $autoloader_param;
-} catch (\Exception $e) {
-    throw new \Exception('The MC2P payment plugin was not installed correctly or the files are corrupt. Please reinstall the plugin. If this message persists after a reinstall, contact hola@mychoice2pay.com with this message.');
-}
-
-if ( !empty( $_REQUEST ) ) {
-    $json = (array)json_decode(file_get_contents('php://input'));
-
-    if ( !empty( $json ) ) {
-
-        $key = Configuration::get('MC2P_KEY');
-        $secretKey = Configuration::get('MC2P_SECRET_KEY');
-        $mc2p = new MC2P\MC2PClient($key, $secretKey);
-
-        $notificationData = $mc2p->NotificationData($json, $mc2p);
-        $transaction = $notificationData->getTransaction();
-
-        if ($notificationData->getStatus() == 'D') {
-            $context = Context::getContext();
-			$cart = new Cart($notificationData->getOrderId());
-			$mc2p = new mc2p();
-
-			if ($cart->id_customer == 0
-				|| $cart->id_address_delivery == 0
-				|| $cart->id_address_invoice == 0
-				|| !$redsys->active) {
-				Tools::redirect('index.php?controller=order&step=1');
-			}
-
-			$customer = new Customer((int)$cart->id_customer);
-
-			// Done
-			Context::getContext()->customer = $customer;
-			$address = new Address((int)$cart->id_address_invoice);
-			Context::getContext()->country = new Country((int)$address->id_country);
-			Context::getContext()->customer = new Customer((int)$cart->id_customer);
-			Context::getContext()->language = new Language((int)$cart->id_lang);
-			Context::getContext()->currency = new Currency((int)$cart->id_currency);
-
-            if (!Validate::isLoadedObject($customer)) {
-				Tools::redirect('index.php?controller=order&step=1');
-			}
-			// Total
-			$totalCart = $cart->getOrderTotal(true, Cart::BOTH);
-
-			// ID Currency
-			$currencyOrigin = new Currency($cart->id_currency);
-
-			if ($currencyOrigin == $transaction->currency && $totalCart == $transaction->total_price) {
-				$mailvars['transaction_id'] = (int)$transaction->token;
-				$mc2p->validateOrder($notificationData->getOrderId(), _PS_OS_PAYMENT_, $totalCart, $mc2p->displayName, null, $mailvars, (int)$cart->id_currency, false, $customer->secure_key);
-            } else {
-                $mc2p->validateOrder($notificationData->getOrderId(), _PS_OS_ERROR_, 0, $mc2p->displayName, 'Error');
-            }
-        } else if ( $notification_data->getStatus() == 'C' ) {
-            $mc2p->validateOrder($notificationData->getOrderId(), _PS_OS_ERROR_, 0, $mc2p->displayName, 'Error');
-        }
+    if ((!$cart = new Cart((int) $transaction['cart_id'])) || !is_object($cart) || $cart->id === null) {
+        throw new \Exception(sprintf('Unable to load cart by card id "%d".', $transaction['cart_id']));
     }
+} catch (\Exception $e) {
+    throw $e;
 }
-?>
+
+$mc2p = new Mc2p();
+$order = new Order(Order::getOrderByCartId($cart->id));
+
+if ($transaction['status'] === 'D') {
+    $mc2p->validateOrder($cart->id, _PS_OS_PAYMENT_, $transaction['amount'], $mc2p->displayName,
+        $mc2p->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])), array(
+            'transaction_id' => $transaction['id']
+        ), null, false, $customer->secure_key, null);
+} else {
+    $mc2p->validateOrder($transaction['id'], _PS_OS_ERROR_, 0, $mc2p->displayName, 'Error');
+}

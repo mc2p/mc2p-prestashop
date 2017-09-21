@@ -26,10 +26,7 @@
  * to hola@mychoice2pay.com so we can send you a copy immediately.
  *}
 
-<p class="payment_module">
-    <a href="{$link->getModuleLink('mc2p', 'payment', ['token' => $static_token])}">
-        <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" title="{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'}" alt="142x38.png" width="142" height="38" /><br /><br />
-        {l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'}
-	    <br class="clear" />
-    </a>
-</p>
+<section id="mc2p-payment-options">
+    <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" alt="142x38.png" width="142" height="38" />
+    <p>{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'} <a target="_blank" href="{l s='https://developer.mychoice2pay.com' mod='mc2p'}">{l s='More' mod='mc2p'}</a></p>
+</section>

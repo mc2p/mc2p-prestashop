@@ -1,4 +1,5 @@
-{**
+<?php
+/**
  * mc2p Module
  *
  * Copyright (c) 2017 MyChoice2Pay
@@ -24,12 +25,23 @@
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to hola@mychoice2pay.com so we can send you a copy immediately.
- *}
+ */
 
-<p class="payment_module">
-    <a href="{$link->getModuleLink('mc2p', 'payment', ['token' => $static_token])}">
-        <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" title="{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'}" alt="142x38.png" width="142" height="38" /><br /><br />
-        {l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'}
-	    <br class="clear" />
-    </a>
-</p>
+require_once dirname(__FILE__) . '/../../config/config.inc.php';
+require_once dirname(__FILE__) . '/../../init.php';
+require_once dirname(__FILE__) . '/mc2p.php';
+
+$mc2p = new Mc2p();
+
+if ((!$cartId = Tools::getValue('cartId'))) {
+    Tools::redirect('index.php');
+}
+
+$order = Order::getOrderByCartId($cartId);
+
+if (!$order || !is_object($order) || $order->id === null) {
+    Tools::redirect('index.php');
+}
+
+Tools::redirect('index.php?controller=order-confirmation&id_cart=' . $order->id_cart . '&id_module=' .
+    $mc2p->id . '&id_order=' . $order->id . '&key=' . $order->secure_key);

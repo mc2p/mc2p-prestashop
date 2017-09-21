@@ -1,6 +1,37 @@
 <?php
-use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-$autoloader_param = __DIR__ . '/lib/MC2P/MC2PClient.php';
+/**
+ * mc2p Module
+ *
+ * Copyright (c) 2017 MyChoice2Pay
+ *
+ * @category  Payment
+ * @author    MyChoice2Pay, <www.mychoice2pay.com>
+ * @copyright 2017, MyChoice2Pay
+ * @link      https://www.mychoice2pay.com/
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ *
+ * Description:
+ *
+ * Payment module mc2p
+ *
+ * --
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to hola@mychoice2pay.com so we can send you a copy immediately.
+ */
+
+if (!defined('_PS_VERSION_')) {
+    exit();
+}
+
+$autoloader_param = dirname(__FILE__) . '/lib/MC2P/MC2PClient.php';
 // Load up the MC2P library
 try {
     require_once $autoloader_param;
@@ -8,254 +39,229 @@ try {
     throw new \Exception('The MC2P payment plugin was not installed correctly or the files are corrupt. Please reinstall the plugin. If this message persists after a reinstall, contact hola@mychoice2pay.com with this message.');
 }
 
-if (!defined('_CAN_LOAD_FILES_')) {
-	exit;
-}
-
-class MC2P extends PaymentModule
+class Mc2p extends PaymentModule
 {
 	private	$html = '';
-	private $post_errors = array();
 
+
+    /**
+     * Build module
+     *
+     * @see PaymentModule::__construct()
+     */
 	public function __construct()
 	{
 		$this->name = 'mc2p';
-		$this->tab = 'payments_gateways';
+        $this->tab = 'payments_gateways';
 		$this->version = '1.0.0';
 		$this->author = 'MyChoice2Pay';
+        $this->currencies = true;
+        $this->currencies_mode = 'radio';
+        $this->is_eu_compatible = 1;
+        $this->controllers = array(
+            'payment'
+        );
+        parent::__construct();
+        $this->page = basename(__FILE__, '.php');
+        $this->displayName = $this->l('MyChoice2Pay');
+        $this->description = $this->l('Allows to receive payments from several payment gateways while offering the possibility of dividing payments between several people.');
+        $this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
 
-		// Array config with configuration data
-		$config = Configuration::getMultiple(array('MC2P_KEY', 'MC2P_SECRET_KEY', 'MC2P_DISPLAY_NAME', 'MC2P_DESCRIPTION'));
-
-		if (isset($config['MC2P_KEY'])) {
-			$this->key = $config['MC2P_KEY'];
+        /* Add configuration warnings if needed */
+        if (!Configuration::get('MC2P_KEY')
+            || !Configuration::get('MC2P_SECRET_KEY')) {
+            $this->warning = $this->l('Module configuration is incomplete.');
         }
-		if (isset($config['MC2P_SECRET_KEY'])) {
-			$this->secretKey = $config['MC2P_SECRET_KEY'];
-        }
-		if (isset($config['MC2P_DISPLAY_NAME'])) {
-			$this->displayName = $config['MC2P_DISPLAY_NAME'];
-        } else {
-            $this->displayName = $this->l('MyChoice2Pay');
-        }
-		if (isset($config['MC2P_DESCRIPTION'])) {
-			$this->description = $config['MC2P_DESCRIPTION'];
-        } else {
-            $this->description = $this->l('Select among several payment methods the one that works best for you in MyChoice2Pay');
-        }
-
-		parent::__construct();
-
-		$this->page = basename(__FILE__, '.php');
-
-		// Show warning if key or secret key is missing
-		if (!isset($this->key) || !isset($this->secretKey)) {
-
-		    $this->warning = $this->l('Key and Secret Key are missing');
-		}
 	}
 
+    /**
+     * Install module
+     *
+     * @see PaymentModule::install()
+     */
 	public function install()
 	{
-		// Default values when install
 		if (!parent::install()
 			|| !Configuration::updateValue('MC2P_KEY', '')
 			|| !Configuration::updateValue('MC2P_SECRET_KEY', '')
-			|| !Configuration::updateValue('MC2P_DISPLAY_NAME', $this->l('MyChoice2Pay'))
-			|| !Configuration::updateValue('MC2P_DESCRIPTION', $this->l('Select among several payment methods the one that works best for you in MyChoice2Pay'))
-			|| !$this->registerHook('paymentOptions')
-			|| !$this->registerHook('paymentReturn')) {
+			|| !$this->registerHook('payment')
+			|| !$this->registerHook('paymentReturn')
+			|| !$this->registerHook('paymentOptions')) {
 			return false;
         }
 		return true;
 	}
 
+    /**
+     * Uninstall module
+     *
+     * @see PaymentModule::uninstall()
+     */
 	public function uninstall()
 	{
-		// Remove values when uninstall
 		if (!Configuration::deleteByName('MC2P_KEY')
 			|| !Configuration::deleteByName('MC2P_SECRET_KEY')
-			|| !Configuration::deleteByName('MC2P_DISPLAY_NAME')
-			|| !Configuration::deleteByName('MC2P_DESCRIPTION')
 			|| !parent::uninstall()) {
 			return false;
         }
 		return true;
 	}
 
-	private function _postValidation()
+    /**
+     * Validate submited data
+     */
+	private function postValidation()
 	{
-		// Show error if missing values
-		if (Tools::isSubmit('btnSubmit'))
-		{
-			if (!Tools::getValue('key')) {
-				$this->post_errors[] = $this->l('Key missing');
+        $this->_errors = array();
+        if (Tools::getValue('submitUpdate')) {
+            if (!Tools::getValue('MC2P_KEY')) {
+                $this->_errors[] = $this->l('mc2p "key" is required.');
             }
-			if (!Tools::getValue('secretKey')) {
-				$this->post_errors[] = $this->l('Secret Key missing');
+            if (!Tools::getValue('MC2P_SECRET_KEY')) {
+                $this->_errors[] = $this->l('mc2p "secret key" is required.');
             }
-		}
-	}
-
-	private function _postProcess()
-	{
-		// Update config of DB
-		if (Tools::isSubmit('btnSubmit'))
-		{
-			Configuration::updateValue('MC2P_KEY', Tools::getValue('key'));
-			Configuration::updateValue('MC2P_SECRET_KEY', Tools::getValue('secretKey'));
-			Configuration::updateValue('MC2P_DISPLAY_NAME', Tools::getValue('displayName'));
-			Configuration::updateValue('MC2P_DESCRIPTION', Tools::getValue('description'));
-		}
-		$this->html .= $this->displayConfirmation($this->l('Configuration updated'));
-	}
-
-	
-	private function _displayMC2P()
-	{
-		// payment list
-		$this->html .= '<img src="../modules/mc2p/assets/images/icons/mc2p.png" style="float:left; margin-right:15px;"><b><br />'
-		.$this->l('Allows to receive payments from several payment gateways while offering the possibility of dividing payments between several people.').'</b><br />';
-	}
-
-	private function _displayForm()
-	{
-		$key = Tools::getValue('key', $this->key);
-		$secretKey = Tools::getValue('secretKey', $this->secretKey);
-		$displayName = Tools::getValue('displayName', $this->displayName);
-		$description = Tools::getValue('description', $this->description);
-
-		// Show form
-		$this->html .= '<form action="'.$_SERVER['REQUEST_URI'].'" method="post">
-			<fieldset>
-			    <legend>'.$this->l('MC2P Configuration').'</legend>
-				<table border="0" width="100%" cellpadding="0" cellspacing="0" id="form">
-					<tr><td colspan="2">'.$this->l('Complete configuration data').'.<br /><br /></td></tr>
-					<tr><td width="30%" style="height: 35px;">'.$this->l('Key').'</td><td><input name="key" type="text" required value"'.$key.'"></td></tr>
-					<tr><td width="30%" style="height: 35px;">'.$this->l('Secret Key').'</td><td><input name="secretKey" required type="text" value"'.$secretKey.'"></td></tr>
-					<tr><td width="30%" style="height: 35px;">'.$this->l('Display Name').'</td><td><input name="displayName" type="text" value"'.$displayName.'"></td></tr>
-					<tr><td width="30%" style="height: 35px;">'.$this->l('Description').'</td><td><input name="description" type="text" value"'.$description.'"></td></tr>
-				</table>
-			</fieldset>
-			<br>
-		    <input class="button" name="btnSubmit" value="'.$this->l('Save configuration').'" type="submit" />
-		</form>';
-	}
-
-	public function getContent()
-	{
-		if (Tools::isSubmit('btnSubmit'))
-		{
-			$this->_postValidation();
-			if (!count($this->post_errors)) {
-				$this->_postProcess();
-            } else {
-				foreach ($this->post_errors as $err) {
-					$this->html .= $this->displayError($err);
-                }
-            }
-		} else {
-			$this->html .= '<br />';
         }
-		$this->_displayMC2P();
-		$this->_displayForm();
-		return $this->html;
 	}
 
-	public function hookPaymentOptions($params)
-	{
-		if (!$this->active)
-			return;
-
-		// Value  of purchase
-		$currency = new Currency($params['cart']->id_currency);
-		$amount = $params['cart']->getOrderTotal(true, Cart::BOTH);
-
-		// Order number
-		$orderId = $params['cart']->id;
-
-		// URLs
-		$customer = new Customer($params['cart']->id_customer);
-		$idCart = (int)$params['cart']->id;
-		if (empty($_SERVER['HTTPS'])) {
-		    $startUrl = 'http://'.$_SERVER['HTTP_HOST'].__PS_BASE_URI__;
-		} else {
-			$startUrl = 'https://'.$_SERVER['HTTP_HOST'].__PS_BASE_URI__;
-		}
-		$notifyUrl = $startUrl.'modules/mc2p/notify.php';
-		$returnUrl = $startUrl.'index.php?controller=order-confirmation&id_cart='.$idCart.'&id_module='.$this->id.'&id_order='.$this->currentOrder.'&key='.$customer->secure_key;
-		$cancelUrl = $startUrl.'pedido';
-
-		$webLanguage = Tools::substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-		switch ($webLanguage) {
-            case 'es':
-                $language = 'es';
-                break;
-            case 'en':
-                $language = 'en';
-                break;
-            default:
-                $language = 'au';
-                break;
+    /**
+     * Update submited configurations
+     */
+    public function getContent()
+    {
+        $this->html = '<h2>' . $this->displayName . '</h2>';
+        if (Tools::isSubmit('submitUpdate')) {
+            Configuration::updateValue('MC2P_KEY', Tools::getValue('MC2P_KEY'));
+            Configuration::updateValue('MC2P_SECRET_KEY', Tools::getValue('MC2P_SECRET_KEY'));
         }
 
-		// Create transaction
-		$mc2p = new MC2P\MC2PClient($this->key, $this->secretKey);
-        $transaction = $mc2p->Transaction(
-            array(
-                "order_id" => $orderId,
-                "currency" => $currency,
-                "return_url"  => $returnUrl,
-                "cancel_url" => $cancelUrl,
-                "notify_url" => $notifyUrl,
-                "language" => $language,
-                "products" => array(
-                    array(
-                        "amount" => 1,
-                        "product" => array(
-                            "name" => __('Payment of order ', 'wc-gateway-mc2p').$order_id,
-                            "price" => $order->get_total()
-                        )
-                    )
-                )
-            )
+        $this->postValidation();
+        if (isset($this->_errors) && count($this->_errors)) {
+            foreach ($this->_errors as $err) {
+                $this->html .= $this->displayError($err);
+            }
+        } elseif (Tools::getValue('submitUpdate') && !count($this->_errors)) {
+            $this->html .= $this->displayConfirmation($this->l('Settings updated'));
+        }
+
+        return $this->html . $this->displayForm();
+    }
+
+    /**
+     * Build and display admin form for configurations
+     */
+    private function displayForm()
+    {
+        $dfl = array(
+            'action' => $_SERVER['REQUEST_URI'],
+            'img_path' => $this->_path . 'views/img/icons/mc2p.png',
+            'path' => $this->_path
         );
-        $transaction->save();
-        $payUrl = $transaction->getPayUrl();
 
-        $this->smarty->assign(array(
-			'payUrl' => $payUrl,
-			'this_path' => $this->_path
-		));
+        $config = Configuration::getMultiple(array(
+            'MC2P_KEY',
+            'MC2P_SECRET_KEY'
+        ));
 
-		// Form
-        $formMC2P = '<form id="payment-form" method="POST" action="'.$payUrl.'"></form>';
-		$newOption = new PaymentOption();
-		$newOption->setCallToActionText($this->trans('Pay with MyChoice2Pay', array(), 'Modules.MC2P.Shop'))
-		    ->setLogo(_MODULE_DIR_.'mc2p/assets/images/icons/mc2p.png')
-		    ->setAdditionalInformation($this->fetch('module:redsys/views/templates/hook/payment.tpl'))
-		    ->setForm($formMC2P)
-		    ->setAction($this->$payUrl);
-		$payment_options = [
-            $newOption,
+        $this->context->smarty->assign(array(
+            'mc2p' => array(
+                'dfl' => $dfl,
+                'config' => $config
+            )
+        ));
+
+        return $this->display(__FILE__, 'views/templates/admin/display_form.tpl');
+    }
+
+    /**
+     * Build and display payment button
+     *
+     * @param unknown $params
+     * @return boolean|\PrestaShop\PrestaShop\Core\Payment\PaymentOption[]
+     */
+    public function hookPaymentOptions($params)
+    {
+        if (!$this->isPayment()) {
+            return false;
+        }
+
+        $this->context->smarty->assign('path', $this->_path);
+
+        $paymentOption = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+        $paymentOption->setCallToActionText($this->l('MyChoice2Pay'))
+            ->setAction($this->context->link->getModuleLink($this->name, 'payment', array(
+                'token' => Tools::getToken(false)
+            ), true))
+            ->setAdditionalInformation($this->context->smarty->fetch('module:mc2p/views/templates/hook/payment_options.tpl'));
+
+        return [
+            $paymentOption
         ];
-        return $payment_options;
-	}
+    }
 
-	public function hookPaymentReturn($params)
-	{
-		if (!$this->active)
-			return;
+    /**
+     * Build and display payment button
+     *
+     * @param array $params
+     * @return string Templatepart
+     */
+    public function hookPayment($params)
+    {
+        if (!$this->isPayment()) {
+            return false;
+        }
 
-		$this->smarty->assign(array(
-			'shop_name' => $this->context->shop->name,
-			'totalPay' => Tools::displayPrice($params['order']->getOrdersTotalPaid(), new Currency($params['order']->id_currency), false),
-			'status' => 'ok',
-			'orderId' => $params['order']->reference,
-			'this_path' => $this->_path
-		));
+        $this->context->smarty->assign('path', $this->_path);
+        $this->context->smarty->assign('static_token', Tools::getToken(false));
 
-		return $this->display(__FILE__, 'payment_return.tpl');
-	}
+        return $this->display(__FILE__, 'views/templates/hook/payment.tpl');
+    }
+
+    /**
+     * Build and display confirmation
+     *
+     * @param array $params
+     * @return string Templatepart
+     */
+    public function hookPaymentReturn($params)
+    {
+        if (!$this->isPayment()) {
+            return false;
+        }
+
+        $this->context->smarty->assign('path', $this->_path);
+
+        /* If PS version is >= 1.7 */
+        if (version_compare(_PS_VERSION_, '1.7', '>=')) {
+            $this->context->smarty->assign(array(
+                'amount' => Tools::displayPrice($params['order']->getOrdersTotalPaid(), new Currency($params['order']->id_currency), false)
+            ));
+        } else {
+            $this->context->smarty->assign(array(
+                'amount' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false)
+            ));
+        }
+
+        $this->context->smarty->assign('shop_name', $this->context->shop->name);
+
+        return $this->display(__FILE__, 'views/templates/hook/payment_return.tpl');
+    }
+
+    /**
+     * Check if payment is active
+     *
+     * @return boolean
+     */
+    public function isPayment()
+    {
+        if (!$this->active) {
+            return false;
+        }
+
+        if (!Configuration::get('MC2P_KEY')
+            || !Configuration::get('MC2P_SECRET_KEY')) {
+            return false;
+        }
+
+        return true;
+    }
 }
-?>
