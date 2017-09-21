@@ -1,15 +1,40 @@
-<img src="{$this_path|escape:'htmlall'}assets/images/icons/mc2p.png" /><br /><br />
-{if $status == 'ok'}
-	<p>
-	{l s='Your order on %s is complete.' sprintf=[$shop_name] mod='redsys'}
-		<br /><br />- {l s='Payment amount.' mod='redsys'} <span class="price"><strong>{$total_to_pay|escape:'htmlall'}</strong></span>
-		<br /><br />- N# <span class="price"><strong>{$id_order|escape:'htmlall'}</strong></span>
-		<br /><br />{l s='An email has been sent to you with this information.' mod='redsys'}
-		<br /><br />{l s='For any questions or for further information, please contact our' mod='redsys'} <a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' mod='redsys'}</a>.
-	</p>
+{**
+ * mc2p Module
+ *
+ * Copyright (c) 2017 MyChoice2Pay
+ *
+ * @category  Payment
+ * @author    MyChoice2Pay, <www.mychoice2pay.com>
+ * @copyright 2017, MyChoice2Pay
+ * @link      https://www.mychoice2pay.com/
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ *
+ * Description:
+ *
+ * Payment module mc2p
+ *
+ * --
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to hola@mychoice2pay.com so we can send you a copy immediately.
+ *}
+
+{if $status === true}
+    <p>
+        {l s='Your order on' mod='mc2p'} <span class="bold">{$shop_name|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='mc2p'}
+        <br /><br />
+        {l s='The total amount of this order is' mod='mc2p'} <span class="price">{$amount|escape:'UTF-8'}</span>
+    </p>
 {else}
-	<p class="warning">
-		{l s='We have noticed that there is a problem with your order. If you think this is an error, you can contact our' mod='mc2p'}
-		<a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' mod='mc2p'}</a>.
-	</p>
+    <p class="warning">
+        {l s='We noticed a problem with your order. If you think this is an error, you can contact our' mod='mc2p'}
+        <a href="{$base_dir_ssl|escape:'htmlall':'UTF-8'}contact-form.php">{l s='customer support' mod='mc2p'}</a>.
+    </p>
 {/if}
