@@ -59,6 +59,7 @@ class Mc2p extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->version = '1.0.0';
         $this->author = 'MyChoice2Pay';
+        $this->module_key = '26f33953dc3c6c678b10fb0314dc92b2';
         $this->currencies = true;
         $this->currencies_mode = 'radio';
         $this->is_eu_compatible = 1;
