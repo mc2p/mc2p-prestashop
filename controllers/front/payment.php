@@ -49,8 +49,10 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
         }
 
         if (!$this->module->isPayment()) {
-            throw new \Exception(sprintf('%s Error: (Inactive or incomplete module configuration)',
-                                         $this->module->displayName));
+            throw new \Exception(sprintf(
+                '%s Error: (Inactive or incomplete module configuration)',
+                $this->module->displayName
+            ));
         }
 
         $cart = $this->context->cart;
@@ -61,8 +63,10 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
         if (!Validate::isLoadedObject($customer)
             || !Validate::isLoadedObject($currency)
             || !Validate::isLoadedObject($language)) {
-            throw new \Exception(sprintf('%s Error: (Invalid customer, language or currency object)',
-                                         $this->module->displayName));
+            throw new \Exception(sprintf(
+                '%s Error: (Invalid customer, language or currency object)',
+                $this->module->displayName
+            ));
         }
 
         $baseUrl = $this->context->shop->getBaseURL() . 'modules/' . $this->module->name;
@@ -86,7 +90,10 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
                     array(
                         "amount" => 1,
                         "product" => array(
-                            "name" => sprintf('%09d - %s %s', $cart->id, $customer->firstname,
+                            "name" => sprintf(
+                                '%09d - %s %s',
+                                $cart->id,
+                                $customer->firstname,
                                 Tools::ucfirst(Tools::strtolower($customer->lastname))
                             ),
                             "price" => $cart->getOrderTotal()

@@ -29,5 +29,5 @@
 <p>
     {l s='Your order on' mod='mc2p'} <span class="bold">{$shop_name|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='mc2p'}
     <br /><br />
-    {l s='The total amount of this order is' mod='mc2p'} <span class="price">{$amount}</span>
+    {l s='The total amount of this order is' mod='mc2p'} <span class="price">{$amount|escape:'htmlall':'UTF-8'}</span>
 </p>

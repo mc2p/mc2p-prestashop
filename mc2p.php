@@ -36,25 +36,29 @@ $autoloader_param = dirname(__FILE__) . '/lib/MC2P/MC2PClient.php';
 try {
     require_once $autoloader_param;
 } catch (\Exception $e) {
-    throw new \Exception('The MC2P payment plugin was not installed correctly or the files are corrupt. Please reinstall the plugin. If this message persists after a reinstall, contact hola@mychoice2pay.com with this message.');
+    throw new \Exception(
+        'The MC2P payment plugin was not installed correctly ' .
+        'or the files are corrupt. Please reinstall the plugin. ' .
+        'If this message persists after a reinstall, contact ' . '
+        hola@mychoice2pay.com with this message.'
+    );
 }
 
 class Mc2p extends PaymentModule
 {
-	private	$html = '';
-
+    private $html = '';
 
     /**
      * Build module
      *
      * @see PaymentModule::__construct()
      */
-	public function __construct()
-	{
-		$this->name = 'mc2p';
+    public function __construct()
+    {
+        $this->name = 'mc2p';
         $this->tab = 'payments_gateways';
-		$this->version = '1.0.0';
-		$this->author = 'MyChoice2Pay';
+        $this->version = '1.0.0';
+        $this->author = 'MyChoice2Pay';
         $this->currencies = true;
         $this->currencies_mode = 'radio';
         $this->is_eu_compatible = 1;
@@ -64,7 +68,9 @@ class Mc2p extends PaymentModule
         parent::__construct();
         $this->page = basename(__FILE__, '.php');
         $this->displayName = $this->l('MyChoice2Pay');
-        $this->description = $this->l('Allows to receive payments from several payment gateways while offering the possibility of dividing payments between several people.');
+        $this->description = $this->l(
+            'Allows to receive payments from several payment gateways ' .
+            'while offering the possibility of dividing payments between several people.');
         $this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
 
         /* Add configuration warnings if needed */
@@ -72,46 +78,46 @@ class Mc2p extends PaymentModule
             || !Configuration::get('MC2P_SECRET_KEY')) {
             $this->warning = $this->l('Module configuration is incomplete.');
         }
-	}
+    }
 
     /**
      * Install module
      *
      * @see PaymentModule::install()
      */
-	public function install()
-	{
-		if (!parent::install()
-			|| !Configuration::updateValue('MC2P_KEY', '')
-			|| !Configuration::updateValue('MC2P_SECRET_KEY', '')
-			|| !$this->registerHook('payment')
-			|| !$this->registerHook('paymentReturn')
-			|| !$this->registerHook('paymentOptions')) {
-			return false;
+    public function install()
+    {
+        if (!parent::install()
+            || !Configuration::updateValue('MC2P_KEY', '')
+            || !Configuration::updateValue('MC2P_SECRET_KEY', '')
+            || !$this->registerHook('payment')
+            || !$this->registerHook('paymentReturn')
+            || !$this->registerHook('paymentOptions')) {
+            return false;
         }
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Uninstall module
      *
      * @see PaymentModule::uninstall()
      */
-	public function uninstall()
-	{
-		if (!Configuration::deleteByName('MC2P_KEY')
-			|| !Configuration::deleteByName('MC2P_SECRET_KEY')
-			|| !parent::uninstall()) {
-			return false;
+    public function uninstall()
+    {
+        if (!Configuration::deleteByName('MC2P_KEY')
+            || !Configuration::deleteByName('MC2P_SECRET_KEY')
+            || !parent::uninstall()) {
+            return false;
         }
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Validate submited data
      */
-	private function postValidation()
-	{
+    private function postValidation()
+    {
         $this->_errors = array();
         if (Tools::getValue('submitUpdate')) {
             if (!Tools::getValue('MC2P_KEY')) {
@@ -121,7 +127,7 @@ class Mc2p extends PaymentModule
                 $this->_errors[] = $this->l('mc2p "secret key" is required.');
             }
         }
-	}
+    }
 
     /**
      * Update submited configurations
@@ -191,7 +197,9 @@ class Mc2p extends PaymentModule
             ->setAction($this->context->link->getModuleLink($this->name, 'payment', array(
                 'token' => Tools::getToken(false)
             ), true))
-            ->setAdditionalInformation($this->context->smarty->fetch('module:mc2p/views/templates/hook/payment_options.tpl'));
+            ->setAdditionalInformation($this->context->smarty->fetch(
+                'module:mc2p/views/templates/hook/payment_options.tpl'
+            ));
 
         return array($paymentOption);
     }
@@ -231,11 +239,19 @@ class Mc2p extends PaymentModule
         /* If PS version is >= 1.7 */
         if (version_compare(_PS_VERSION_, '1.7', '>=')) {
             $this->context->smarty->assign(array(
-                'amount' => Tools::displayPrice($params['order']->getOrdersTotalPaid(), new Currency($params['order']->id_currency), false)
+                'amount' => Tools::displayPrice(
+                    $params['order']->getOrdersTotalPaid(),
+                    new Currency($params['order']->id_currency),
+                    false
+                )
             ));
         } else {
             $this->context->smarty->assign(array(
-                'amount' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false)
+                'amount' => Tools::displayPrice(
+                    $params['total_to_pay'],
+                    $params['currencyObj'],
+                    false
+                )
             ));
         }
 

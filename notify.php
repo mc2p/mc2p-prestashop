@@ -68,10 +68,18 @@ $mc2p = new Mc2p();
 $order = new Order(Order::getOrderByCartId($cart->id));
 
 if ($transaction['status'] === 'D') {
-    $mc2p->validateOrder($cart->id, _PS_OS_PAYMENT_, $transaction['amount'], $mc2p->displayName,
-        $mc2p->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])), array(
-            'transaction_id' => $transaction['id']
-        ), null, false, $customer->secure_key, null);
+    $mc2p->validateOrder(
+        $cart->id,
+        _PS_OS_PAYMENT_,
+        $transaction['amount'],
+        $mc2p->displayName,
+        $mc2p->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])),
+        array('transaction_id' => $transaction['id']),
+        null,
+        false,
+        $customer->secure_key,
+        null
+    );
 } else {
     $mc2p->validateOrder($transaction['id'], _PS_OS_ERROR_, 0, $mc2p->displayName, 'Error');
 }
