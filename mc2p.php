@@ -70,7 +70,8 @@ class Mc2p extends PaymentModule
         $this->displayName = $this->l('MyChoice2Pay');
         $this->description = $this->l(
             'Allows to receive payments from several payment gateways ' .
-            'while offering the possibility of dividing payments between several people.');
+            'while offering the possibility of dividing payments between several people.'
+        );
         $this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
 
         /* Add configuration warnings if needed */
