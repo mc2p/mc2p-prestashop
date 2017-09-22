@@ -49,7 +49,8 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
         }
 
         if (!$this->module->isPayment()) {
-            throw new \Exception(sprintf('%s Error: (Inactive or incomplete module configuration)', $this->module->displayName));
+            throw new \Exception(sprintf('%s Error: (Inactive or incomplete module configuration)',
+                                         $this->module->displayName));
         }
 
         $cart = $this->context->cart;
@@ -60,12 +61,14 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
         if (!Validate::isLoadedObject($customer)
             || !Validate::isLoadedObject($currency)
             || !Validate::isLoadedObject($language)) {
-            throw new \Exception(sprintf('%s Error: (Invalid customer, language or currency object)', $this->module->displayName));
+            throw new \Exception(sprintf('%s Error: (Invalid customer, language or currency object)',
+                                         $this->module->displayName));
         }
 
+        $baseUrl = $this->context->shop->getBaseURL() . 'modules/' . $this->module->name;
         $url = array(
-            'notify' => $this->context->shop->getBaseURL() . 'modules/' . $this->module->name . '/notify.php',
-            'return' => $this->context->shop->getBaseURL() . 'modules/' . $this->module->name . '/return.php?cartId='.$cart->id,
+            'notify' => $baseUrl . '/notify.php',
+            'return' => $baseUrl . '/return.php?cartId='.$cart->id,
             'cancel' => $this->context->shop->getBaseURL() . 'index.php?controller=order&step=3'
         );
 
@@ -83,9 +86,7 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
                     array(
                         "amount" => 1,
                         "product" => array(
-                            "name" => sprintf('%09d - %s %s',
-                                $cart->id,
-                                $customer->firstname,
+                            "name" => sprintf('%09d - %s %s', $cart->id, $customer->firstname,
                                 Tools::ucfirst(Tools::strtolower($customer->lastname))
                             ),
                             "price" => $cart->getOrderTotal()
@@ -97,7 +98,6 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
 
         try {
             $transaction->save();
-
         } catch (MC2P\InvalidRequestMC2PError $e) {
             throw new \Exception(sprintf('MC2P module configuration error: %s', $e->getMessage()));
         }
