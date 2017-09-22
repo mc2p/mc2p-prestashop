@@ -26,15 +26,8 @@
  * to hola@mychoice2pay.com so we can send you a copy immediately.
  *}
 
-{if $status === true}
-    <p>
-        {l s='Your order on' mod='mc2p'} <span class="bold">{$shop_name|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='mc2p'}
-        <br /><br />
-        {l s='The total amount of this order is' mod='mc2p'} <span class="price">{$amount|escape:'UTF-8'}</span>
-    </p>
-{else}
-    <p class="warning">
-        {l s='We noticed a problem with your order. If you think this is an error, you can contact our' mod='mc2p'}
-        <a href="{$base_dir_ssl|escape:'htmlall':'UTF-8'}contact-form.php">{l s='customer support' mod='mc2p'}</a>.
-    </p>
-{/if}
+<p>
+    {l s='Your order on' mod='mc2p'} <span class="bold">{$shop_name|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='mc2p'}
+    <br /><br />
+    {l s='The total amount of this order is' mod='mc2p'} <span class="price">{$amount|escape:'UTF-8'}</span>
+</p>
