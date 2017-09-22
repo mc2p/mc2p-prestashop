@@ -53,11 +53,12 @@ $transaction = array(
     'cart_id' => $notificationData->getOrderId()
 );
 
-$customer = new Customer((int)$cart->id_customer);
-
 try {
     if ((!$cart = new Cart((int) $transaction['cart_id'])) || !is_object($cart) || $cart->id === null) {
         throw new \Exception(sprintf('Unable to load cart by card id "%d".', $transaction['cart_id']));
+    }
+    if ((!$customer = new Customer($cart->id_customer))) {
+        throw new \Exception('Invalid or missing customer secure key for this transaction.');
     }
 } catch (\Exception $e) {
     throw $e;

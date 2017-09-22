@@ -37,7 +37,7 @@ if ((!$cartId = Tools::getValue('cartId'))) {
     Tools::redirect('index.php');
 }
 
-$order = Order::getOrderByCartId($cartId);
+$order = new Order(Order::getOrderByCartId($cartId));
 
 if (!$order || !is_object($order) || $order->id === null) {
     Tools::redirect('index.php');
