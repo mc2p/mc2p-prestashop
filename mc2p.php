@@ -69,10 +69,7 @@ class Mc2p extends PaymentModule
         parent::__construct();
         $this->page = basename(__FILE__, '.php');
         $this->displayName = $this->l('MyChoice2Pay');
-        $this->description = $this->l(
-            'Allows to receive payments from several payment gateways ' .
-            'while offering the possibility of dividing payments between several people.'
-        );
+        $this->description = $this->l('Allows to receive payments from several payment gateways');
         $this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
 
         /* Add configuration warnings if needed */
