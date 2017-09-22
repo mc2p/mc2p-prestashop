@@ -4,11 +4,11 @@
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
+ * @category  Payment
  * @author    MyChoice2Pay, <www.mychoice2pay.com>
  * @copyright 2017, MyChoice2Pay
- * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @category  Payment
  * @link      https://www.mychoice2pay.com/
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  *
  * Description:
  *
@@ -27,21 +27,6 @@
  * to hola@mychoice2pay.com so we can send you a copy immediately.
  */
 
-require_once dirname(__FILE__) . '/../../config/config.inc.php';
-require_once dirname(__FILE__) . '/../../init.php';
-require_once dirname(__FILE__) . '/mc2p.php';
+die(header('Location:../'));
 
-$mc2p = new Mc2p();
-
-if ((!$cartId = Tools::getValue('cartId'))) {
-    Tools::redirect('index.php');
-}
-
-$order = new Order(Order::getOrderByCartId($cartId));
-
-if (!$order || !is_object($order) || $order->id === null) {
-    Tools::redirect('index.php');
-}
-
-Tools::redirect('index.php?controller=order-confirmation&id_cart=' . $order->id_cart . '&id_module=' .
-    $mc2p->id . '&id_order=' . $order->id . '&key=' . $order->secure_key);
+?>

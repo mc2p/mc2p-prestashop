@@ -4,11 +4,11 @@
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
- * @category  Payment
  * @author    MyChoice2Pay, <www.mychoice2pay.com>
  * @copyright 2017, MyChoice2Pay
- * @link      https://www.mychoice2pay.com/
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @category  Payment
+ * @link      https://www.mychoice2pay.com/
  *
  * Description:
  *
