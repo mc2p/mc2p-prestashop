@@ -2,7 +2,7 @@
 /**
  * mc2p Module
  *
- * Copyright (c) 2017 MyChoice2Pay
+ * Copyright (c) 2018 MyChoice2Pay
  *
  * @category  Payment
  * @author    MyChoice2Pay, <www.mychoice2pay.com>
@@ -27,6 +27,12 @@
  * to hola@mychoice2pay.com so we can send you a copy immediately.
  */
 
-die(header('Location:../'));
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 
-?>
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+
+header('Location: ../');
+exit;
