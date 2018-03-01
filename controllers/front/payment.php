@@ -1,6 +1,6 @@
 <?php
 /**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
@@ -12,7 +12,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *
@@ -29,7 +29,7 @@
 
 require_once dirname(__FILE__) . '/../../lib/MC2P/MC2PClient.php';
 
-class MC2PPaymentModuleFrontController extends ModuleFrontController
+class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
 
@@ -71,10 +71,15 @@ class MC2PPaymentModuleFrontController extends ModuleFrontController
 
         $baseUrl = $this->context->shop->getBaseURL() . 'modules/' . $this->module->name;
         $url = array(
-            'notify' => $baseUrl . '/notify.php',
-            'return' => $baseUrl . '/return.php?cartId='.$cart->id,
+            'notify' => $baseUrl . '/validation.php',
             'cancel' => $this->context->shop->getBaseURL() . 'index.php?controller=order&step=3'
         );
+
+        if (_PS_VERSION_ <= '1.5') {
+            $url['return'] = $this->context->shop->getBaseURL() . 'index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key;
+        } else {
+            $url['return'] = Context::getContext()->link->getModuleLink('mychoice2pay', 'validation');
+        }
 
         $mc2p = new MC2P\MC2PClient(Configuration::get('MC2P_KEY'), Configuration::get('MC2P_SECRET_KEY'));
 
