@@ -76,7 +76,9 @@ class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
         );
 
         if (_PS_VERSION_ <= '1.5') {
-            $url['return'] = $this->context->shop->getBaseURL() . 'index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key;
+            $url['return'] = $this->context->shop->getBaseURL() . 'index.php?controller=order-confirmation&id_cart='.
+                $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.
+                $customer->secure_key;
         } else {
             $url['return'] = Context::getContext()->link->getModuleLink('mychoice2pay', 'validation');
         }
