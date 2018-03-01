@@ -1,5 +1,5 @@
 {**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
@@ -11,7 +11,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *
@@ -27,9 +27,9 @@
  *}
 
 <p class="payment_module">
-    <a href="{$link->getModuleLink('mc2p', 'payment', array('token' => $static_token))}">
-        <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" title="{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'}" alt="142x38.png" width="142" height="38" /><br /><br />
-        {l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'}
+    <a href="{$link->getModuleLink('mychoice2pay', 'payment', array('token' => $static_token))}">
+        <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" title="{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mychoice2pay'}" alt="142x38.png" width="142" height="38" /><br /><br />
+        {l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mychoice2pay'}
 	    <br class="clear" />
     </a>
 </p>

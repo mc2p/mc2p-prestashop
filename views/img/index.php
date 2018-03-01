@@ -1,6 +1,6 @@
 <?php
 /**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2018 MyChoice2Pay
  *
@@ -12,7 +12,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *

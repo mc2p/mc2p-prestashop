@@ -1,5 +1,5 @@
 {**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
@@ -11,7 +11,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *
@@ -27,7 +27,7 @@
  *}
 
 <p>
-    {l s='Your order on' mod='mc2p'} <span class="bold">{$shop_name|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='mc2p'}
+    {l s='Your order on' mod='mychoice2pay'} <span class="bold">{$shop_name|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='mychoice2pay'}
     <br /><br />
-    {l s='The total amount of this order is' mod='mc2p'} <span class="price">{$amount|escape:'htmlall':'UTF-8'}</span>
+    {l s='The total amount of this order is' mod='mychoice2pay'} <span class="price">{$amount|escape:'htmlall':'UTF-8'}</span>
 </p>

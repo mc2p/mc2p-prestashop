@@ -1,5 +1,5 @@
 {**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
@@ -11,7 +11,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *
@@ -26,7 +26,9 @@
  * to hola@mychoice2pay.com so we can send you a copy immediately.
  *}
 
-<section id="mc2p-payment-options">
+<section id="mychoice2pay-payment-options">
     <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" alt="142x38.png" width="142" height="38" />
-    <p>{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mc2p'} <a target="_blank" href="{l s='https://developer.mychoice2pay.com' mod='mc2p'}">{l s='More' mod='mc2p'}</a></p>
+    <br>
+    <br>
+    <p>{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mychoice2pay'}</p>
 </section>
