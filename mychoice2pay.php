@@ -1,6 +1,6 @@
 <?php
 /**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
@@ -12,7 +12,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *
@@ -44,7 +44,7 @@ try {
     );
 }
 
-class Mc2p extends PaymentModule
+class Mychoice2pay extends PaymentModule
 {
     private $html = '';
 
@@ -55,7 +55,7 @@ class Mc2p extends PaymentModule
      */
     public function __construct()
     {
-        $this->name = 'mc2p';
+        $this->name = 'mychoice2pay';
         $this->tab = 'payments_gateways';
         $this->version = '1.0.0';
         $this->author = 'MyChoice2Pay';
@@ -120,10 +120,10 @@ class Mc2p extends PaymentModule
         $this->_errors = array();
         if (Tools::getValue('submitUpdate')) {
             if (!Tools::getValue('MC2P_KEY')) {
-                $this->_errors[] = $this->l('mc2p "key" is required.');
+                $this->_errors[] = $this->l('mychoice2pay "key" is required.');
             }
             if (!Tools::getValue('MC2P_SECRET_KEY')) {
-                $this->_errors[] = $this->l('mc2p "secret key" is required.');
+                $this->_errors[] = $this->l('mychoice2pay "secret key" is required.');
             }
         }
     }
@@ -168,7 +168,7 @@ class Mc2p extends PaymentModule
         ));
 
         $this->context->smarty->assign(array(
-            'mc2p' => array(
+            'mychoice2pay' => array(
                 'dfl' => $dfl,
                 'config' => $config
             )
@@ -197,7 +197,7 @@ class Mc2p extends PaymentModule
                 'token' => Tools::getToken(false)
             ), true))
             ->setAdditionalInformation($this->context->smarty->fetch(
-                'module:mc2p/views/templates/hook/payment_options.tpl'
+                'module:mychoice2pay/views/templates/hook/payment_options.tpl'
             ));
 
         return array($paymentOption);
