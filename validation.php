@@ -1,6 +1,6 @@
 <?php
 /**
- * mc2p Module
+ * mychoice2pay Module
  *
  * Copyright (c) 2017 MyChoice2Pay
  *
@@ -12,7 +12,7 @@
  *
  * Description:
  *
- * Payment module mc2p
+ * Payment module mychoice2pay
  *
  * --
  *
@@ -29,7 +29,7 @@
 
 require_once dirname(__FILE__) . '/../../config/config.inc.php';
 require_once dirname(__FILE__) . '/../../init.php';
-require_once dirname(__FILE__) . '/mc2p.php';
+require_once dirname(__FILE__) . '/mychoice2pay.php';
 require_once dirname(__FILE__) . '/lib/MC2P/MC2PClient.php';
 
 $key = Configuration::get('MC2P_KEY');
@@ -64,16 +64,16 @@ try {
     throw $e;
 }
 
-$mc2p = new Mc2p();
+$mychoice2pay = new Mychoice2pay();
 $order = new Order(Order::getOrderByCartId($cart->id));
 
 if ($transaction['status'] === 'D') {
-    $mc2p->validateOrder(
+    $mychoice2pay->validateOrder(
         $cart->id,
         _PS_OS_PAYMENT_,
         $transaction['amount'],
-        $mc2p->displayName,
-        $mc2p->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])),
+        $mychoice2pay->displayName,
+        $mychoice2pay->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])),
         array('transaction_id' => $transaction['id']),
         null,
         false,
@@ -81,5 +81,5 @@ if ($transaction['status'] === 'D') {
         null
     );
 } else {
-    $mc2p->validateOrder($transaction['id'], _PS_OS_ERROR_, 0, $mc2p->displayName, 'Error');
+    $mychoice2pay->validateOrder($transaction['id'], _PS_OS_ERROR_, 0, $mychoice2pay->displayName, 'Error');
 }
