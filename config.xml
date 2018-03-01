@@ -2,7 +2,7 @@
 <module>
 	<name>mychoice2pay</name>
 	<displayName><![CDATA[MyChoice2Pay]]></displayName>
-	<version><![CDATA[1.0.0]]></version>
+	<version><![CDATA[1.0.1]]></version>
 	<description><![CDATA[Allows to receive payments from several payment gateways]]></description>
 	<author><![CDATA[MyChoice2Pay]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>
