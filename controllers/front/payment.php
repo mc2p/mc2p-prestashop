@@ -106,6 +106,10 @@ class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
                             "price" => $cart->getOrderTotal()
                         )
                     )
+                ),
+                "extra" => array(
+                    "email" => $customer->email,
+                    "full_name" => $customer->firstname . ' ' . $customer->lastname
                 )
             )
         );
