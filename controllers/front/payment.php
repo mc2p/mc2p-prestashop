@@ -80,7 +80,9 @@ class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
                 $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.
                 $customer->secure_key;
         } else {
-            $url['return'] = Context::getContext()->link->getModuleLink('mychoice2pay', 'validation');
+            $url['return'] = $this->context->shop->getBaseURL() . 'index.php?controller=order-confirmation&id_cart='.
+                $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.
+                $customer->secure_key;
         }
 
         $mc2p = new MC2P\MC2PClient(Configuration::get('MC2P_KEY'), Configuration::get('MC2P_SECRET_KEY'));
