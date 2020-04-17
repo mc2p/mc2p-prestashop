@@ -80,6 +80,18 @@ fieldset a:hover {
             <p>{l s='Leave it blank for disabling' mod='mychoice2pay'}</p>
         </div>
         <div class="clear"></div>
+        <label>{l s='Title' mod='mychoice2pay'}</label>
+        <div class="margin-form">
+            <input type="text" name="MC2P_TITLE" value="{$mychoice2pay.config.MC2P_TITLE|escape:'htmlall':'UTF-8'}" />
+            <p>{l s='Leave it blank for disabling' mod='mychoice2pay'}</p>
+        </div>
+        <div class="clear"></div>
+        <label>{l s='Description' mod='mychoice2pay'}</label>
+        <div class="margin-form">
+            <input type="text" name="MC2P_DESCRIPTION" value="{$mychoice2pay.config.MC2P_DESCRIPTION|escape:'htmlall':'UTF-8'}" />
+            <p>{l s='Leave it blank for disabling' mod='mychoice2pay'}</p>
+        </div>
+        <div class="clear"></div>
         <div class="margin-form clear pspace"><input type="submit" name="submitUpdate" value="{l s='Save' mod='mychoice2pay'}" class="button" /></div>
     </fieldset>
 </fieldset>

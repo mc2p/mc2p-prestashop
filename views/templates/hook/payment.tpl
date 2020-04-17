@@ -28,8 +28,7 @@
 
 <p class="payment_module">
     <a href="{$link->getModuleLink('mychoice2pay', 'payment', array('token' => $static_token))}">
-        <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" title="{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mychoice2pay'}" alt="142x38.png" width="142" height="38" /><br /><br />
-        {l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mychoice2pay'}
+        {$description|escape:'htmlall'}
 	    <br class="clear" />
     </a>
 </p>

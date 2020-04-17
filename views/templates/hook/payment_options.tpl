@@ -27,8 +27,5 @@
  *}
 
 <section id="mychoice2pay-payment-options">
-    <img src="{$path|escape:'htmlall'}views/img/icons/mc2p.png" alt="142x38.png" width="142" height="38" />
-    <br>
-    <br>
-    <p>{l s='Select among several payment methods the one that works best for you in MyChoice2Pay.' mod='mychoice2pay'}</p>
+    <p>{$description|escape:'htmlall'}</p>
 </section>
