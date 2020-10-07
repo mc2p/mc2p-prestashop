@@ -27,5 +27,9 @@
  *}
 
 <section id="mychoice2pay-payment-options">
+    {if $icon}
+    <img src="{$icon|escape:'htmlall'}"/>
+    <br>
+    {/if}
     <p>{$description|escape:'htmlall'}</p>
 </section>

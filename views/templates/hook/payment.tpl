@@ -28,6 +28,10 @@
 
 <p class="payment_module">
     <a href="{$link->getModuleLink('mychoice2pay', 'payment', array('token' => $static_token))}">
+        {if $icon}
+        <img src="{$icon|escape:'htmlall'}"/>
+        <br>
+        {/if}
         {$description|escape:'htmlall'}
 	    <br class="clear" />
     </a>
