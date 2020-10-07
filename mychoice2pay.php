@@ -76,7 +76,9 @@ class Mychoice2pay extends PaymentModule
         if (!Configuration::get('MC2P_KEY')
             || !Configuration::get('MC2P_SECRET_KEY')
             || !Configuration::get('MC2P_TITLE')
-            || !Configuration::get('MC2P_DESCRIPTION')) {
+            || !Configuration::get('MC2P_DESCRIPTION')
+            || !Configuration::get('MC2P_IFRAME')
+            || !Configuration::get('MC2P_ICON')) {
             $this->warning = $this->l('Module configuration is incomplete.');
         }
     }
@@ -93,6 +95,8 @@ class Mychoice2pay extends PaymentModule
             || !Configuration::updateValue('MC2P_SECRET_KEY', '')
             || !Configuration::updateValue('MC2P_TITLE', '')
             || !Configuration::updateValue('MC2P_DESCRIPTION', '')
+            || !Configuration::updateValue('MC2P_IFRAME', '')
+            || !Configuration::updateValue('MC2P_ICON', '')
             || !$this->registerHook('payment')
             || !$this->registerHook('paymentReturn')
             || !$this->registerHook('paymentOptions')) {
@@ -112,6 +116,8 @@ class Mychoice2pay extends PaymentModule
             || !Configuration::deleteByName('MC2P_SECRET_KEY')
             || !Configuration::deleteByName('MC2P_TITLE')
             || !Configuration::deleteByName('MC2P_DESCRIPTION')
+            || !Configuration::deleteByName('MC2P_IFRAME')
+            || !Configuration::deleteByName('MC2P_ICON')
             || !parent::uninstall()) {
             return false;
         }
@@ -151,6 +157,8 @@ class Mychoice2pay extends PaymentModule
             Configuration::updateValue('MC2P_SECRET_KEY', Tools::getValue('MC2P_SECRET_KEY'));
             Configuration::updateValue('MC2P_TITLE', Tools::getValue('MC2P_TITLE'));
             Configuration::updateValue('MC2P_DESCRIPTION', Tools::getValue('MC2P_DESCRIPTION'));
+            Configuration::updateValue('MC2P_IFRAME', Tools::getValue('MC2P_IFRAME'));
+            Configuration::updateValue('MC2P_ICON', Tools::getValue('MC2P_ICON'));
         }
 
         $this->postValidation();
@@ -180,7 +188,9 @@ class Mychoice2pay extends PaymentModule
             'MC2P_KEY',
             'MC2P_SECRET_KEY',
             'MC2P_TITLE',
-            'MC2P_DESCRIPTION'
+            'MC2P_DESCRIPTION',
+            'MC2P_IFRAME',
+            'MC2P_ICON'
         ));
 
         $this->context->smarty->assign(array(
@@ -208,6 +218,7 @@ class Mychoice2pay extends PaymentModule
         $this->context->smarty->assign('path', $this->_path);
         $this->context->smarty->assign('title', Configuration::get('MC2P_TITLE'));
         $this->context->smarty->assign('description', Configuration::get('MC2P_DESCRIPTION'));
+        $this->context->smarty->assign('icon', Configuration::get('MC2P_ICON'));
 
         $paymentOption = new \PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $paymentOption->setCallToActionText(Configuration::get('MC2P_TITLE'))
@@ -237,6 +248,7 @@ class Mychoice2pay extends PaymentModule
         $this->context->smarty->assign('static_token', Tools::getToken(false));
         $this->context->smarty->assign('title', Configuration::get('MC2P_TITLE'));
         $this->context->smarty->assign('description', Configuration::get('MC2P_DESCRIPTION'));
+        $this->context->smarty->assign('icon', Configuration::get('MC2P_ICON'));
 
         return $this->display(__FILE__, 'views/templates/hook/payment.tpl');
     }

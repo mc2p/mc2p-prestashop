@@ -92,6 +92,16 @@ fieldset a:hover {
             <p>{l s='Leave it blank for disabling' mod='mychoice2pay'}</p>
         </div>
         <div class="clear"></div>
+        <label>{l s='Image' mod='mychoice2pay'}</label>
+        <div class="margin-form">
+            <input type="text" name="MC2P_ICON" value="{$mychoice2pay.config.MC2P_ICON|escape:'htmlall':'UTF-8'}" />
+        </div>
+        <div class="clear"></div>
+        <label>{l s='IFrame' mod='mychoice2pay'}</label>
+        <div class="margin-form">
+            <input type="checkbox" name="MC2P_IFRAME" value="active" {if $mychoice2pay.config.MC2P_IFRAME eq 'active'}checked{/if} />
+        </div>
+        <div class="clear"></div>
         <div class="margin-form clear pspace"><input type="submit" name="submitUpdate" value="{l s='Save' mod='mychoice2pay'}" class="button" /></div>
     </fieldset>
 </fieldset>
