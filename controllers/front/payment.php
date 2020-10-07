@@ -41,6 +41,7 @@ class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
     {
         $this->display_column_left = false;
         $this->display_column_right = false;
+        $this->page_name = 'checkout';
 
         parent::initContent();
 
@@ -69,20 +70,23 @@ class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
             ));
         }
 
-        $baseUrl = $this->context->shop->getBaseURL() . 'modules/' . $this->module->name;
+        $baseUrl = $this->context->shop->getBaseURL(true) . 'modules/' . $this->module->name;
         $url = array(
             'notify' => $baseUrl . '/validation.php',
-            'cancel' => $this->context->shop->getBaseURL() . 'index.php?controller=order&step=3'
+            'cancel' => $this->context->shop->getBaseURL(true) . 'index.php?controller=order&step=3'
         );
 
         if (_PS_VERSION_ <= '1.5') {
-            $url['return'] = $this->context->shop->getBaseURL() . 'index.php?controller=order-confirmation&id_cart='.
+            $url['return'] = $this->context->shop->getBaseURL(true) . 'index.php?controller=order-confirmation&id_cart='.
                 $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.
                 $customer->secure_key;
         } else {
-            $url['return'] = $this->context->shop->getBaseURL() . 'index.php?controller=order-confirmation&id_cart='.
-                $cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.
-                $customer->secure_key;
+            $url['return'] = $this->context->link->getPageLink('order-confirmation', null, null, array(
+                'id_cart' => $cart->id,
+                'id_module' => $this->module->id,
+                'key' => $customer->secure_key,
+                'id_order' => $this->module->currentOrder
+            ));
         }
 
         $mc2p = new MC2P\MC2PClient(Configuration::get('MC2P_KEY'), Configuration::get('MC2P_SECRET_KEY'));
@@ -122,6 +126,11 @@ class Mychoice2payPaymentModuleFrontController extends ModuleFrontController
             throw new \Exception(sprintf('MC2P module configuration error: %s', $e->getMessage()));
         }
 
-        Tools::redirect($transaction->getPayUrl());
+        if (Configuration::get('MC2P_IFRAME') == 'active') {
+            $this->context->smarty->assign('url', $transaction->getIframeUrl());
+            $this->setTemplate('module:mychoice2pay/views/templates/front/iframe.tpl');
+        } else {
+            Tools::redirect($transaction->getPayUrl());
+        }        
     }
 }
