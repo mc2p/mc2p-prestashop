@@ -68,18 +68,20 @@ $mychoice2pay = new Mychoice2pay();
 $order = new Order(Order::getOrderByCartId($cart->id));
 
 if ($transaction['status'] === 'D') {
-    $mychoice2pay->validateOrder(
-        $cart->id,
-        _PS_OS_PAYMENT_,
-        $transaction['amount'],
-        $mychoice2pay->displayName,
-        $mychoice2pay->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])),
-        array('transaction_id' => $transaction['id']),
-        null,
-        false,
-        $customer->secure_key,
-        null
-    );
+    if ($notificationData->getSaleAction() == 'G') {
+        $mychoice2pay->validateOrder(
+            $cart->id,
+            _PS_OS_PAYMENT_,
+            $transaction['amount'],
+            $mychoice2pay->displayName,
+            $mychoice2pay->l(sprintf('MC2P transaction ID: %s.', $transaction['id'])),
+            array('transaction_id' => $transaction['id']),
+            null,
+            false,
+            $customer->secure_key,
+            null
+        );
+    }
 } else {
     $mychoice2pay->validateOrder($transaction['id'], _PS_OS_ERROR_, 0, $mychoice2pay->displayName, 'Error');
 }
